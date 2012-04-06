@@ -33,7 +33,7 @@ namespace spidernet
 	/// <summary>
 	/// 表示url树中的节点.
 	/// </summary>
-	[Serializable]
+	[Serializable]//TODO: 存储url树, 保存进度
 	internal sealed class node
 	{
 		/// <summary>
