@@ -15,7 +15,7 @@ https://github.com/nsnail/spidernet
 
 编译方法:
 ---------------------------------------------------------------------------------------
-进入\src\spidernet目录, 运行msbuild for .net4.0
+进入\build目录, 运行msbuild for .net4.0
 - 不带参数: 编译release版本.
 - 附加参数/p:Configuration=Debug 编译debug版本.
 
