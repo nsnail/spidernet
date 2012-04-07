@@ -148,17 +148,17 @@ namespace spidernet
 					if (rep.Headers[HttpResponseHeader.ContentType] != null)
 					{
 						if (rep.Headers[HttpResponseHeader.ContentType].Contains("utf-8"))
-							html = Encoding.UTF8.GetString(down_bytes);
+							html = Encoding.UTF8.GetString(down_bytes, 0, down_bytes_cursor);
 						else if (rep.Headers[HttpResponseHeader.ContentType].Contains("gb2312")
 							|| rep.Headers[HttpResponseHeader.ContentType].Contains("gbk"))
-							html = Encoding.GetEncoding(54936).GetString(down_bytes);
+							html = Encoding.GetEncoding(54936).GetString(down_bytes, 0, down_bytes_cursor);
 					}
 				}
 
 				if (html == null)
 				{
 					//http head中未指定encoding的资源, 暂以utf8统一解码.
-					html = Encoding.UTF8.GetString(down_bytes);
+					html = Encoding.UTF8.GetString(down_bytes, 0, down_bytes_cursor);
 
 					Match m = _regex_charset.Match(html);//寻找<meta>标记中的charset
 					if (!m.Success)
