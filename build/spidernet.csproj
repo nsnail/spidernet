@@ -1,74 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0A20CDE9-1517-4CDB-96D4-C10E530A41B5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>spidernet</RootNamespace>
-    <AssemblyName>spidernet</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <TPath>$(MSBuildProjectDirectory)\MSBuild.ExtensionPack.tasks</TPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin\debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-	<DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>..\bin\release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="CommandLine, Version=1.9.0.1, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\src\spidernet\cmd_opt.cs" />
-    <Compile Include="..\src\spidernet\node.cs" />
-    <Compile Include="..\src\spidernet\prog.cs" />
-    <Compile Include="..\src\spidernet\prog_cter.cs" />
-    <Compile Include="..\src\spidernet\asm_info.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+		<ProductVersion>8.0.30703</ProductVersion>
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{0A20CDE9-1517-4CDB-96D4-C10E530A41B5}</ProjectGuid>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>spidernet</RootNamespace>
+		<AssemblyName>spidernet</AssemblyName>
+		<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+		<TargetFrameworkProfile>
+		</TargetFrameworkProfile>
+		<FileAlignment>512</FileAlignment>
+		<TPath>$(MSBuildProjectDirectory)\MSBuild.ExtensionPack.tasks</TPath>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+		<PlatformTarget>x86</PlatformTarget>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>..\bin\debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+		<PlatformTarget>x86</PlatformTarget>
+		<DebugSymbols>false</DebugSymbols>
+		<Optimize>true</Optimize>
+		<OutputPath>..\bin\release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="CommandLine, Version=1.9.0.1, Culture=neutral, processorArchitecture=x86">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\lib\CommandLine.dll</HintPath>
+		</Reference>
+		<Reference Include="log4net">
+			<HintPath>..\lib\log4net.dll</HintPath>
+		</Reference>
+		<Reference Include="System" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\lib\System.Data.SQLite.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Data" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="..\src\spidernet\cmd_opt.cs" />
+		<Compile Include="..\src\spidernet\node.cs" />
+		<Compile Include="..\src\spidernet\prog.cs" />
+		<Compile Include="..\src\spidernet\prog_cter.cs" />
+		<Compile Include="..\src\spidernet\asm_info.cs" />
+		<Compile Include="..\src\spidernet\filter.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\src\spidernet\app.config" />
+	</ItemGroup>
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="$(TPath)"/>
-  <Target Name="AfterBuild">
-    <RemoveDir Directories="$(WDTargetDir)obj" Condition="Exists('$(WDTargetDir)obj')" />
-    <!-- Create a zip file based on a Path -->
-    <ItemGroup>
-      <!-- Set the collection of files to Zip-->
-      <FilesToZip Include="$(MSBuildProjectDirectory)\..\bin\release\**\*"/>
-    </ItemGroup>
-    <MSBuild.ExtensionPack.Compression.Zip Condition="Exists('$(MSBuildProjectDirectory)\..\bin\release')" TaskAction="Create" CompressionLevel="BestCompression" CompressFiles="@(FilesToZip)" RemoveRoot="$(MSBuildProjectDirectory)\..\bin\release" ZipFileName="$(MSBuildProjectDirectory)\..\bin\download\spidernet-bin-lastest.zip"/>
-  </Target>
+	<Import Project="$(TPath)"/>
+	<Target Name="AfterBuild">
+		<RemoveDir Directories="$(WDTargetDir)obj" Condition="Exists('$(WDTargetDir)obj')" />
+		<!-- Create a zip file based on a Path -->
+		<ItemGroup>
+			<!-- Set the collection of files to Zip-->
+			<FilesToZip Include="$(MSBuildProjectDirectory)\..\bin\release\**\*"/>
+		</ItemGroup>
+		<MSBuild.ExtensionPack.Compression.Zip Condition="Exists('$(MSBuildProjectDirectory)\..\bin\release')" TaskAction="Create" CompressionLevel="BestCompression" CompressFiles="@(FilesToZip)" RemoveRoot="$(MSBuildProjectDirectory)\..\bin\release" ZipFileName="$(MSBuildProjectDirectory)\..\bin\download\spidernet-bin-lastest.zip"/>
+	</Target>
 </Project>
