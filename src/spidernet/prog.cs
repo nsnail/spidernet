@@ -140,6 +140,7 @@ namespace spidernet
 								decode_bytes_cursor += read_size;
 							}
 							down_bytes = decode_bytes;
+							down_bytes_cursor = decode_bytes_cursor;
 						}
 					}
 
@@ -171,7 +172,7 @@ namespace spidernet
 					//http body中指定了gbk编码
 					if (m.Groups[1].Value.IndexOf("gb2312", StringComparison.OrdinalIgnoreCase) >= 0
 						|| m.Groups[1].Value.IndexOf("gbk", StringComparison.OrdinalIgnoreCase) >= 0)
-						html = Encoding.GetEncoding(54936).GetString(down_bytes);
+						html = Encoding.GetEncoding(54936).GetString(down_bytes, 0, down_bytes_cursor);
 
 				}
 			}
