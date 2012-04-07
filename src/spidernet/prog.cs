@@ -38,11 +38,17 @@ using System.Threading;
 using CommandLine;
 using CommandLine.Text;
 using System.Diagnostics;
+using log4net;
 
 namespace spidernet
 {
 	internal sealed class prog
 	{
+		/// <summary>
+		/// 日志记录器
+		/// </summary>
+		private static readonly ILog _log = LogManager.GetLogger(typeof(prog));
+
 		/// <summary>
 		/// 抓取数据存储文件是否创建的标示.
 		/// </summary>
@@ -56,8 +62,7 @@ namespace spidernet
 		/// </summary>
 		private static readonly cmd_opts _opts = new cmd_opts();
 		private static readonly Regex _regex_charset = new Regex("\\<meta.*?charset=(.*?)\\\"", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private static readonly Regex _regex_href = new Regex("href=\"(http://.*?)\"", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		//TODO: 目前暂未匹配相对链接
+		private static readonly Regex _regex_href = new Regex("\\<a.+?href=\"(.*?)\"", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex _regex_title = new Regex("\\<title\\>((?:.|\n)*?)\\</title\\>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		/// <summary>
 		/// url树
@@ -83,13 +88,14 @@ namespace spidernet
 					return;
 				start_node.locked = true;
 			}
+			lock (_log)
+				_log.InfoFormat("requesting\t{0}", start_node.url);
 
 			//资源解码后存储的str
 			string html = null;
 			try
 			{
 				HttpWebRequest req = WebRequest.Create(start_node.url) as HttpWebRequest;
-				req.Proxy = null;
 				req.Timeout = _opts.timeout;
 				req.AllowAutoRedirect = false; //TODO: 避免死递归, 禁止301等重定向.(需改进)
 				byte[] down_bytes = new byte[_opts.bytes_max];
@@ -186,10 +192,12 @@ namespace spidernet
 				MatchCollection mc = _regex_href.Matches(html);
 				IEnumerable<string> mc_str =
 					(mc.AsParallel() as IEnumerable<Object>).Select(f => (f as Match).Groups[1].Value).Distinct();
-				foreach (string u in mc_str)
+				foreach (string href in mc_str)
 				{
-					node child = new node { url = u, parent = start_node, depth = start_node.depth + 1 };//深度+1
-					if (isdup(u, _root_node)) continue;//url重复检查.
+					string child_url = filter.filter_href(href, start_node.url);
+					if (child_url == null) continue;
+					node child = new node { url = child_url, parent = start_node, depth = start_node.depth + 1 };//深度+1
+					if (isdup(child_url, _root_node)) continue;//url重复检查.
 					lock (start_node)
 						start_node.children.Add(child);//添加children,这些新的children是未lock状态, 会马上被空闲的线程抢到并遍历.
 				}
@@ -260,9 +268,13 @@ namespace spidernet
 		/// <returns></returns>
 		private static node find_nolock_node(node root)
 		{
-			if (!root.locked) return root;
-			return root.children.Count == 0 ? null
-				: root.children.Select(find_nolock_node).FirstOrDefault(f => f != null);
+			lock (root)
+			{
+				if (!root.locked) return root;
+				return root.children.Count == 0
+						? null
+						: root.children.Select(find_nolock_node).FirstOrDefault(f => f != null);
+			}
 		}
 		/// <summary>
 		/// 检查指定url是否在整棵树中存在, 避免死循环.
