@@ -57,6 +57,7 @@
 		<Compile Include="..\src\spidernet\prog_cter.cs" />
 		<Compile Include="..\src\spidernet\asm_info.cs" />
 		<Compile Include="..\src\spidernet\filter.cs" />
+		<Compile Include="..\src\spidernet\db_mgr.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\src\spidernet\app.config" />
