@@ -33,24 +33,76 @@ namespace spidernet
 {
 	internal sealed class db_mgr
 	{
-		private string _db_path;
-		private int _cache_cnt = 100;
+		// Fields (4) 
 
-		public db_mgr(string db_path)
-		{
-			_db_path = db_path;
-			_db_created = File.Exists(_db_path);
-		}
+		private int _cache_cnt = cmd_opts.__cache_default;
+		/// <summary>
+		/// 抓取数据存储文件是否创建的标示.
+		/// </summary>
+		private bool _db_created;
+		private string _db_path;
+		private List<Tuple<string, string, string, DateTime>> _inner_cache = new List<Tuple<string, string, string, DateTime>>();
+
+		// Constructors (2) 
+
 		public db_mgr(string db_path, int cache_cnt)
 			: this(db_path)
 		{
 			_cache_cnt = cache_cnt;
 		}
 
-		/// <summary>
-		/// 抓取数据存储文件是否创建的标示.
-		/// </summary>
-		private bool _db_created;
+		public db_mgr(string db_path)
+		{
+			_db_path = db_path;
+			_db_created = File.Exists(_db_path);
+		}
+
+		// Methods (2) 
+
+		// Public Methods (1) 
+
+		public void write_to_db(string url, string title, string html, DateTime create_time)
+		{
+			lock (_inner_cache)
+			{
+				_inner_cache.Add(new Tuple<string, string, string, DateTime>(url, title, html, create_time));
+				if (_inner_cache.Count >= _cache_cnt)
+				{
+
+					//写入数据库
+					if (!_db_created)
+					{
+						create_db();
+						_db_created = true;
+					}
+					using (SQLiteConnection conn = new SQLiteConnection("Data Source=" + _db_path))
+					{
+						conn.Open();
+						using (SQLiteTransaction tran = conn.BeginTransaction())
+						{
+							foreach (Tuple<string, string, string, DateTime> cache in
+								_inner_cache)
+							{
+								SQLiteCommand cmd = new SQLiteCommand(conn);
+								cmd.Transaction = tran;
+								cmd.CommandText = "insert into crawl values(@url, @title, @html, @createtime)";
+								cmd.Parameters.AddRange(new[] {
+									new SQLiteParameter("@url", cache.Item1),
+									new SQLiteParameter("@title", cache.Item2),
+									new SQLiteParameter("@html", cache.Item3),
+									new SQLiteParameter("@createtime", cache.Item4)
+								});
+								cmd.ExecuteNonQuery();
+							}
+							tran.Commit();
+						}
+					}
+					_inner_cache.Clear();
+				}
+
+			}
+		}
+		// Private Methods (1) 
 
 		/// <summary>
 		/// 创建sqlite数据库, 和表.
@@ -70,60 +122,5 @@ namespace spidernet
 				cmd.ExecuteNonQuery();
 			}
 		}
-
-		private List<Tuple<string, string, string, DateTime>> _inner_cache = new List<Tuple<string, string, string, DateTime>>();
-
-		public void write_to_db_cache(string url, string title, string html, DateTime create_time)
-		{
-			lock (_inner_cache)
-			{
-				_inner_cache.Add(new Tuple<string, string, string, DateTime>(url, title, html, create_time));
-				if (_inner_cache.Count >= _cache_cnt)
-				{
-					foreach (Tuple<string, string, string, DateTime> cache in
-						_inner_cache)
-					{
-						write_to_db(cache.Item1, cache.Item2, cache.Item3, cache.Item4);
-					}
-					_inner_cache.Clear();
-				}
-
-			}
-		}
-
-		/// <summary>
-		/// 写入数据库
-		/// </summary>
-		/// <param name="url"></param>
-		/// <param name="title"></param>
-		/// <param name="html"></param>
-		/// <param name="create_time"></param>
-		private void write_to_db(string url, string title, string html, DateTime create_time)
-		{
-			//写入数据库
-			if (!_db_created)
-			{
-				create_db();
-				_db_created = true;
-			}
-			using (SQLiteConnection conn = new SQLiteConnection("Data Source=" + _db_path))
-			using (SQLiteCommand cmd = new SQLiteCommand(conn))
-			{
-
-				conn.Open();
-				cmd.CommandText = "insert into crawl values(@url,@title,@html,@createtime)";
-
-
-
-				cmd.Parameters.AddRange(new[] {
-			        new SQLiteParameter("@url", url),
-			        new SQLiteParameter("@title", title),
-			        new SQLiteParameter("@html", html),
-                    new SQLiteParameter("@createtime", create_time)
-				                              });
-				cmd.ExecuteNonQuery();
-			}
-		}
-
 	}
 }

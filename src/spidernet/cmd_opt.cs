@@ -33,19 +33,22 @@ namespace spidernet
 {
 	internal sealed class cmd_opts : CommandLineOptionsBase
 	{
+		public const int __cache_default = 500;
 
 		[Option(null, "dbpath", HelpText = "设置抓取数据存储文件路径. [default: {CURRPATH}\\spidernet.db3]")]
-		public string db_path = "spidernet.db3";
+		public string _db_path = "spidernet.db3";
+		[Option("c", "dbcache", HelpText = "数据文件写入缓存(n).  [default: 500]")]
+		public int _db_cache = __cache_default;
 		[Option("t", "thread", HelpText = "设置爬虫线程数量. [default: 10]")]
-		public int thread_cnt = 10;
+		public int _thread_cnt = 10;
 		[Option("d", "depth", HelpText = "设置爬行深度(从1开始). [default: 5]")]
-		public int crawl_depth = 5;
+		public int _crawl_depth = 5;
 		[Option("u", "starturl", Required = true, HelpText = "设置爬行起始url地址.")]
-		public string url_start;
+		public string _url_start;
 		[Option("m", "maxbytes", HelpText = "获取资源时最大下载字节数(byte).  [default: 1MB]")]
-		public int bytes_max = 1024 * 1024;
+		public int _bytes_max = 1024 * 1024;
 		[Option(null, "timeout", HelpText = "获取资源超时时间(ms).  [default: 20s]")]
-		public int timeout = 20 * 1000;
+		public int _timeout = 20 * 1000;
 
 
 

@@ -95,9 +95,9 @@ namespace spidernet
 			try
 			{
 				HttpWebRequest req = WebRequest.Create(req_url) as HttpWebRequest;
-				req.Timeout = _opts.timeout;
+				req.Timeout = _opts._timeout;
 				req.AllowAutoRedirect = false; //TODO: 避免死递归, 禁止301等重定向.(需改进)
-				byte[] down_bytes = new byte[_opts.bytes_max];
+				byte[] down_bytes = new byte[_opts._bytes_max];
 				byte[] down_buf = new byte[down_bytes.Length / 10]; //缓存区, 1/10的容器大小.
 				int down_bytes_cursor = 0; //容器填充位置
 				using (WebResponse rep = req.GetResponse())
@@ -213,11 +213,11 @@ namespace spidernet
 				if (m.Success)
 					title = m.Groups[1].Value.Replace("\n", "").Replace("\r", "").Trim();
 				//写入数据库
-				_dbm.write_to_db_cache(start_node.url, title, res, DateTime.Now);
+				_dbm.write_to_db(start_node.url, title, res, DateTime.Now);
 				++prog_stat.res_stored;
 
 				//当前爬行深度已达到限制, 不再增加child.
-				if (start_node.depth >= _opts.crawl_depth) return;
+				if (start_node.depth >= _opts._crawl_depth) return;
 
 				//匹配html中的href,将这些url作为自己的children集合.
 				MatchCollection mc = _regex_href.Matches(res);
@@ -279,12 +279,12 @@ namespace spidernet
 			if (!parser.ParseArguments(args, _opts))
 				Environment.Exit(1);
 
-			_root_node = new node { url = _opts.url_start };
-			_dbm = new db_mgr(_opts.db_path);
+			_root_node = new node { url = _opts._url_start };
+			_dbm = new db_mgr(_opts._db_path, _opts._db_cache);
 
 			//启动工作线程
-			_thread_msg_dic = new Dictionary<Thread, string>(_opts.thread_cnt);
-			for (int i = 0; i != _opts.thread_cnt; ++i)
+			_thread_msg_dic = new Dictionary<Thread, string>(_opts._thread_cnt);
+			for (int i = 0; i != _opts._thread_cnt; ++i)
 			{
 				Thread t = new Thread(t_work) { IsBackground = true, Name = "t" + i };
 				lock (_thread_msg_dic)
